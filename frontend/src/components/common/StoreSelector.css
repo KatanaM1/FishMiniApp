@@ -1,0 +1,11 @@
+/* frontend/src/components/common/StoreSelector.css */
+.store-selector {
+  padding: 16px;
+  background: var(--tg-theme-secondary-bg-color);
+  border-bottom: 1px solid var(--tg-theme-separator-color);
+}
+
+.store-buttons {
+  display: flex;
+  gap: 8px;
+}

@@ -6,13 +6,13 @@ import type { Product, CartItem } from '../types';
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Product) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: string) => void;          // string вместо number
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
   totalItems: number;
-  isInCart: (productId: number) => boolean;
-  getQuantity: (productId: number) => number;
+  isInCart: (productId: string) => boolean;
+  getQuantity: (productId: string) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,11 +34,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, []);
 
-  const removeItem = useCallback((productId: number) => {
+  const removeItem = useCallback((productId: string) => {
     setItems(prev => prev.filter(item => item.id !== productId));
   }, []);
 
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(productId);
       return;
@@ -55,11 +55,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   
-  const isInCart = useCallback((productId: number) => 
+  const isInCart = useCallback((productId: string) => 
     items.some(item => item.id === productId), [items]
   );
   
-  const getQuantity = useCallback((productId: number) => 
+  const getQuantity = useCallback((productId: string) => 
     items.find(item => item.id === productId)?.quantity || 0, [items]
   );
 

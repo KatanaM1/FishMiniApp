@@ -36,7 +36,14 @@ export interface OrderItem {
 export interface Store {
   id: number;
   name: string;
+  slug?: string;
+  description: string;
+  is_active: boolean;
   // другие поля, если нужны
+}
+
+export interface CartItem extends Product {
+  quantity: number;
 }
 
 // Если нужно, можно экспортировать тип для создания товара без id

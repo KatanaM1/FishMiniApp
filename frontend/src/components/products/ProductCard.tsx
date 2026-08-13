@@ -9,12 +9,32 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
-  const image = product.images?.[0] || '📦';
+  // Проверяем, есть ли изображения и является ли первое URL
+  const image = product.images?.[0] || '';
+  const isImageUrl = image.startsWith('http://') || image.startsWith('https://');
 
   return (
     <Card>
       <div style={{ padding: '12px' }}>
-        <div style={{ fontSize: '48px', textAlign: 'center' }}>{image}</div>
+        {/* Если это URL — показываем <img>, иначе эмодзи */}
+        {isImageUrl ? (
+          <img
+            src={image}
+            alt={product.name}
+            style={{
+              width: '100%',
+              height: '200px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+              marginBottom: '8px',
+            }}
+          />
+        ) : (
+          <div style={{ fontSize: '48px', textAlign: 'center' }}>
+            {image || '📦'}
+          </div>
+        )}
+
         <Text weight="2">{product.name}</Text>
         <Text style={{ color: 'var(--tg-theme-hint-color)' }}>{product.description}</Text>
         <Text weight="3" style={{ fontSize: '18px', marginTop: '8px' }}>
@@ -25,7 +45,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
           stretched
           style={{ marginTop: '12px' }}
           onClick={onAddToCart}
-          disabled={product.stock === 0} 
+          disabled={product.stock === 0}
         >
           {product.stock > 0 ? '➕ В корзину' : '❌ Нет в наличии'}
         </Button>

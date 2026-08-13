@@ -1,8 +1,7 @@
 // frontend/src/components/admin/AdminProductForm.tsx
 import { useState, useRef } from 'react';
 import { Text, Input, Button, Select } from '@telegram-apps/telegram-ui';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '../../firebase';
+import { uploadToImgBB } from '../../utils/uploadImage';
 import type { Product, Store } from '../../types';
 
 interface AdminProductFormProps {
@@ -20,36 +19,24 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
   const [stock, setStock] = useState(product?.stock?.toString() || '0');
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
 
-  // Состояние для изображений
   const [existingImages, setExistingImages] = useState<string[]>(product?.images || []);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Добавление файлов
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       setNewImageFiles(prev => [...prev, ...files]);
     }
-    // Очищаем input, чтобы можно было выбрать те же файлы повторно
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // Удаление нового файла (ещё не загружен)
   const removeNewFile = (index: number) => {
     setNewImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Удаление существующего изображения (из Firestore)
-  const removeExistingImage = async (url: string) => {
-    try {
-      // Удаляем файл из Storage (опционально)
-      const fileRef = ref(storage, url);
-      await deleteObject(fileRef);
-    } catch (error) {
-      console.warn('Не удалось удалить файл из Storage, возможно, ссылка не ведёт на Storage:', error);
-    }
+  const removeExistingImage = (url: string) => {
     setExistingImages(prev => prev.filter(img => img !== url));
   };
 
@@ -58,16 +45,13 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
     setUploading(true);
 
     try {
-      // Загружаем новые файлы в Storage
+      // Загружаем новые файлы на ImgBB
       const uploadedUrls: string[] = [];
       for (const file of newImageFiles) {
-        const fileRef = ref(storage, `products/${Date.now()}_${file.name}`);
-        await uploadBytes(fileRef, file);
-        const url = await getDownloadURL(fileRef);
+        const url = await uploadToImgBB(file);
         uploadedUrls.push(url);
       }
 
-      // Объединяем существующие и новые URL
       const allImages = [...existingImages, ...uploadedUrls];
 
       const productData: Omit<Product, 'id'> = {
@@ -81,10 +65,10 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
       };
 
       await onSubmit(productData);
-      onCancel(); // закрываем форму после успешного сохранения
+      onCancel();
     } catch (error) {
       console.error('Ошибка загрузки изображений:', error);
-      alert('Не удалось загрузить изображения. Проверьте настройки Storage.');
+      alert('Не удалось загрузить изображения. Проверьте API-ключ ImgBB.');
     } finally {
       setUploading(false);
     }
@@ -92,7 +76,6 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Поля формы (без изменений) */}
       <div style={{ marginBottom: 12 }}>
         <Text>Название *</Text>
         <Input
@@ -123,11 +106,8 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         />
       </div>
 
-      {/* Блок изображений */}
       <div style={{ marginBottom: 12 }}>
         <Text>Изображения</Text>
-
-        {/* Кнопка выбора файлов */}
         <input
           type="file"
           accept="image/*"
@@ -137,7 +117,6 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
           style={{ marginBottom: '8px' }}
         />
 
-        {/* Превью существующих изображений */}
         {existingImages.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
             {existingImages.map((url, idx) => (
@@ -170,7 +149,6 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
           </div>
         )}
 
-        {/* Превью новых файлов (ещё не загружены) */}
         {newImageFiles.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {newImageFiles.map((file, idx) => (
@@ -204,7 +182,6 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         )}
       </div>
 
-      {/* Остальные поля: магазин, склад, активность */}
       <div style={{ marginBottom: 12 }}>
         <Text>Магазин</Text>
         <Select

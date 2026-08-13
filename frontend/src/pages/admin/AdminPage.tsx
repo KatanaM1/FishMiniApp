@@ -117,24 +117,6 @@ export const AdminPage = () => {
         </Button>
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <Text style={{ fontSize: '14px', color: 'var(--tg-theme-hint-color)' }}>
-          Выберите магазин для управления:
-        </Text>
-        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-          {stores.map(store => (
-            <Button
-              key={store.id}
-              size="s"
-              mode={currentStore?.id === store.id ? 'filled' : 'outline'}
-              onClick={() => setCurrentStore(store)}
-            >
-              {store.name}
-            </Button>
-          ))}
-        </div>
-      </div>
-
       {!isFormOpen && (
         <Button stretched style={{ marginBottom: '16px' }} onClick={() => setIsFormOpen(true)}>
           + Добавить товар

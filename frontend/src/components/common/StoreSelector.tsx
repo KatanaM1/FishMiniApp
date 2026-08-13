@@ -14,9 +14,6 @@ export const StoreSelector = () => {
           Выберите магазин:
         </Text>
         <Link to="/admin" style={{ textDecoration: 'none' }}>
-          <Button size="s" mode="outline">
-            ⚙️ Админка
-          </Button>
         </Link>
       </div>
       <div className="store-buttons">

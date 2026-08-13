@@ -5,6 +5,8 @@ import { getAuth } from "firebase/auth";
 import type { FirebaseApp } from "firebase/app";
 import type { Firestore } from "firebase/firestore";
 import type { Auth } from "firebase/auth";
+import { getStorage } from 'firebase/storage';
+
 
 // Твой конфиг
 const firebaseConfig = { 
@@ -23,3 +25,4 @@ const app: FirebaseApp = initializeApp(firebaseConfig);
 // Экспорты
 export const db: Firestore = getFirestore(app);
 export const auth: Auth = getAuth(app);
+export const storage = getStorage(app);

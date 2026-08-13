@@ -1,6 +1,6 @@
 // frontend/src/pages/HomePage.tsx
 import { useState, useEffect } from 'react';
-import { Text, Button } from '@telegram-apps/telegram-ui';
+import { Text} from '@telegram-apps/telegram-ui';
 import { collection, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { ProductCard } from '../components/products/ProductCard';
@@ -56,19 +56,6 @@ export const HomePage = () => {
 
   return (
     <div style={{ padding: '16px' }}>
-      {/* Выбор магазина (если их несколько) */}
-      <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-        {stores.map((store) => (
-          <Button
-            key={store.id}
-            size="s"
-            mode={selectedStoreId === store.id ? 'filled' : 'outline'}
-            onClick={() => setCurrentStore(store)}
-          >
-            {store.name}
-          </Button>
-        ))}
-      </div>
 
       {/* Загрузка */}
       {loading && <Text>Загрузка товаров...</Text>}

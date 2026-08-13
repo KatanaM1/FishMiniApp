@@ -25,7 +25,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
           stretched
           style={{ marginTop: '12px' }}
           onClick={onAddToCart}
-          disabled={product.stock === 0}  // было product.inStock
+          disabled={product.stock === 0} 
         >
           {product.stock > 0 ? '➕ В корзину' : '❌ Нет в наличии'}
         </Button>

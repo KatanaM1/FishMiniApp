@@ -16,7 +16,7 @@ export const AdminLogin = () => {
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Вход успешен — onAuthStateChanged в AdminPage обновит состояние
+      // Вход успешен — компонент перерендерится и AdminPage покажет админку
     } catch (err: any) {
       setError('Неверный email или пароль');
       console.error(err);

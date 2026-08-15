@@ -41,10 +41,6 @@ export const HomePage = () => {
     ? allProducts.filter(p => p.category === selectedCategory)
     : allProducts;
 
-  const handleAddToCart = (product: Product) => {
-    alert(`Добавлено в корзину: ${product.name}`);
-  };
-
   if (stores.length === 0) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -108,7 +104,6 @@ export const HomePage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                onAddToCart={() => handleAddToCart(product)}
               />
             ))}
           </div>

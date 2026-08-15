@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { Text, Input, Button, Select } from '@telegram-apps/telegram-ui';
 import { uploadToImgBB } from '../../utils/uploadImage';
+import { CATEGORIES } from '../../constants/categories';
 import type { Product, Store } from '../../types';
 
 interface AdminProductFormProps {
@@ -12,18 +13,22 @@ interface AdminProductFormProps {
 }
 
 export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminProductFormProps) => {
+  // Основные поля
   const [name, setName] = useState(product?.name || '');
   const [price, setPrice] = useState(product?.price?.toString() || '');
   const [description, setDescription] = useState(product?.description || '');
   const [storeId, setStoreId] = useState(product?.store_id || stores[0]?.id || 0);
   const [stock, setStock] = useState(product?.stock?.toString() || '0');
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
+  const [category, setCategory] = useState(product?.category || '');
 
+  // Изображения
   const [existingImages, setExistingImages] = useState<string[]>(product?.images || []);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Обработчики для изображений
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -40,6 +45,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
     setExistingImages(prev => prev.filter(img => img !== url));
   };
 
+  // Отправка формы
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploading(true);
@@ -62,6 +68,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         store_id: storeId,
         stock: parseInt(stock) || 0,
         is_active: isActive,
+        category: category || undefined,
       };
 
       await onSubmit(productData);
@@ -76,6 +83,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Название */}
       <div style={{ marginBottom: 12 }}>
         <Text>Название *</Text>
         <Input
@@ -86,6 +94,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         />
       </div>
 
+      {/* Цена */}
       <div style={{ marginBottom: 12 }}>
         <Text>Цена *</Text>
         <Input
@@ -97,6 +106,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         />
       </div>
 
+      {/* Описание */}
       <div style={{ marginBottom: 12 }}>
         <Text>Описание</Text>
         <Input
@@ -106,6 +116,24 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         />
       </div>
 
+      {/* Категория */}
+      <div style={{ marginBottom: 12 }}>
+        <Text>Категория</Text>
+        <Select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          style={{ width: '100%' }}
+        >
+          <option value="">Без категории</option>
+          {CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      {/* Изображения */}
       <div style={{ marginBottom: 12 }}>
         <Text>Изображения</Text>
         <input
@@ -117,6 +145,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
           style={{ marginBottom: '8px' }}
         />
 
+        {/* Существующие изображения */}
         {existingImages.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
             {existingImages.map((url, idx) => (
@@ -149,6 +178,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
           </div>
         )}
 
+        {/* Новые файлы (ещё не загружены) */}
         {newImageFiles.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {newImageFiles.map((file, idx) => (
@@ -182,11 +212,13 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         )}
       </div>
 
+      {/* Магазин */}
       <div style={{ marginBottom: 12 }}>
         <Text>Магазин</Text>
         <Select
           value={storeId}
           onChange={(e) => setStoreId(Number(e.target.value))}
+          style={{ width: '100%' }}
         >
           {stores.map(store => (
             <option key={store.id} value={store.id}>
@@ -196,6 +228,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         </Select>
       </div>
 
+      {/* Количество на складе */}
       <div style={{ marginBottom: 12 }}>
         <Text>Количество на складе</Text>
         <Input
@@ -206,6 +239,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         />
       </div>
 
+      {/* Активен */}
       <div style={{ marginBottom: 12 }}>
         <label>
           <input
@@ -217,6 +251,7 @@ export const AdminProductForm = ({ product, stores, onSubmit, onCancel }: AdminP
         </label>
       </div>
 
+      {/* Кнопки */}
       <div style={{ display: 'flex', gap: 8 }}>
         <Button type="submit" mode="filled" disabled={uploading}>
           {uploading ? 'Загрузка...' : (product ? 'Сохранить' : 'Добавить')}

@@ -1,15 +1,15 @@
 // frontend/src/types.ts
 
 export interface Product {
-  id: string;          // Firebase генерирует строковый id
+  id: string;
   name: string;
   price: number;
   description?: string;
-  images?: string[];   // массив эмодзи или URL картинок
-  store_id: number;    // идентификатор магазина
-  stock: number;       // количество на складе
-  is_active: boolean;  // активен ли товар
-  category?: string;
+  images?: string[];
+  store_id: number;
+  stock: number;
+  is_active: boolean;
+  category?: string;          // ← добавить
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,51 +1,50 @@
 // frontend/src/pages/HomePage.tsx
 import { useState, useEffect } from 'react';
-import { Text} from '@telegram-apps/telegram-ui';
+import { Text, Button } from '@telegram-apps/telegram-ui';
 import { collection, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { ProductCard } from '../components/products/ProductCard';
 import { useStore } from '../contexts/StoreContext';
 import { db } from '../firebase';
+import { CATEGORIES } from '../constants/categories';
 import type { Product } from '../types';
 
 export const HomePage = () => {
   const { stores, currentStore, setCurrentStore } = useStore();
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>(''); // '' = все
 
-  // Автоматически выбираем первый магазин при загрузке
   useEffect(() => {
     if (stores.length > 0 && !currentStore) {
       setCurrentStore(stores[0]);
     }
   }, [stores, currentStore, setCurrentStore]);
 
-  // Синхронизируем локальный стейт с выбранным магазином из контекста
   useEffect(() => {
     if (currentStore) {
       setSelectedStoreId(currentStore.id);
     }
   }, [currentStore]);
 
-  // Запрос к Firestore: получаем товары только для выбранного магазина
+  // Запрос к Firestore
   const productsRef = collection(db, 'products');
-  const q = selectedStoreId
-    ? query(productsRef, where('store_id', '==', selectedStoreId))
-    : query(productsRef); // если магазин не выбран – показываем все (или можно пустой массив)
-
+  const q = query(productsRef, where('store_id', '==', selectedStoreId));
   const [snapshot, loading, error] = useCollection(q);
 
-  // Преобразуем данные из Firestore
-  const products: Product[] = snapshot?.docs.map((doc) => ({
-    id: doc.id, // Firebase генерирует строковый id
+  const allProducts: Product[] = snapshot?.docs.map((doc) => ({
+    id: doc.id,
     ...doc.data(),
   })) as Product[] || [];
 
+  // Фильтрация по категории
+  const filteredProducts = selectedCategory
+    ? allProducts.filter(p => p.category === selectedCategory)
+    : allProducts;
+
   const handleAddToCart = (product: Product) => {
-    // TODO: реализовать добавление в корзину (через контекст или стейт)
     alert(`Добавлено в корзину: ${product.name}`);
   };
 
-  // Если магазинов нет – показываем сообщение
   if (stores.length === 0) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -57,21 +56,55 @@ export const HomePage = () => {
   return (
     <div style={{ padding: '16px' }}>
 
-      {/* Загрузка */}
+      {/* Меню категорий (как на Ozon) */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          paddingBottom: '12px',
+          marginBottom: '16px',
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
+      >
+        <Button
+          size="s"
+          mode={selectedCategory === '' ? 'filled' : 'outline'}
+          onClick={() => setSelectedCategory('')}
+        >
+          Все
+        </Button>
+        {CATEGORIES.map((cat) => (
+          <Button
+            key={cat}
+            size="s"
+            mode={selectedCategory === cat ? 'filled' : 'outline'}
+            onClick={() => setSelectedCategory(cat)}
+          >
+            {cat}
+          </Button>
+        ))}
+      </div>
+
       {loading && <Text>Загрузка товаров...</Text>}
+      {error && <Text style={{ color: 'red' }}>Ошибка: {error.message}</Text>}
 
-      {/* Ошибка */}
-      {error && <Text style={{ color: 'red' }}>Ошибка загрузки: {error.message}</Text>}
-
-      {/* Список товаров */}
       {!loading && !error && (
-        products.length === 0 ? (
+        filteredProducts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <Text>В этом магазине пока нет товаров</Text>
+            <Text>Нет товаров в этой категории</Text>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
-            {products.map((product) => (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

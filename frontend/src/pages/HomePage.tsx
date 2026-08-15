@@ -87,7 +87,7 @@ export const HomePage = () => {
       style={{
         flexShrink: 0,
         whiteSpace: 'nowrap',
-        minWidth: 'fit-content',
+        minWidth: '80px',
         padding: '0 12px',
       }}
     >

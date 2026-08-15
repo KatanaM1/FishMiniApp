@@ -53,36 +53,48 @@ export const HomePage = () => {
     <div style={{ padding: '16px' }}>
 
       {/* Меню категорий (как на Ozon) */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          paddingBottom: '12px',
-          marginBottom: '16px',
-          whiteSpace: 'nowrap',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-        }}
-      >
-        <Button
-          size="s"
-          mode={selectedCategory === '' ? 'filled' : 'outline'}
-          onClick={() => setSelectedCategory('')}
-        >
-          Все
-        </Button>
-        {CATEGORIES.map((cat) => (
-          <Button
-            key={cat}
-            size="s"
-            mode={selectedCategory === cat ? 'filled' : 'outline'}
-            onClick={() => setSelectedCategory(cat)}
-          >
-            {cat}
-          </Button>
-        ))}
-      </div>
+<div
+  style={{
+    display: 'flex',
+    gap: '8px',
+    overflowX: 'auto',
+    paddingBottom: '12px',
+    marginBottom: '16px',
+    WebkitOverflowScrolling: 'touch',
+    scrollbarWidth: 'none',
+    // скрыть скроллбар в Firefox
+  }}
+>
+  <Button
+    size="s"
+    mode={selectedCategory === '' ? 'filled' : 'outline'}
+    onClick={() => setSelectedCategory('')}
+    style={{
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
+      minWidth: 'fit-content',
+      padding: '0 12px',
+    }}
+  >
+    Все
+  </Button>
+  {CATEGORIES.map((cat) => (
+    <Button
+      key={cat}
+      size="s"
+      mode={selectedCategory === cat ? 'filled' : 'outline'}
+      onClick={() => setSelectedCategory(cat)}
+      style={{
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        minWidth: 'fit-content',
+        padding: '0 12px',
+      }}
+    >
+      {cat}
+    </Button>
+  ))}
+</div>
 
       {loading && <Text>Загрузка товаров...</Text>}
       {error && <Text style={{ color: 'red' }}>Ошибка: {error.message}</Text>}

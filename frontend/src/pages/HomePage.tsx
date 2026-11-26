@@ -92,47 +92,48 @@ export const HomePage = () => {
 
   return (
     <div style={{ padding: '16px' }}>
-      {/* Меню категорий — меняется в зависимости от выбранного магазина */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          paddingBottom: '12px',
-          marginBottom: '16px',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-        }}
-      >
-        <Button
-          size="s"
-          mode={selectedCategory === '' ? 'filled' : 'outline'}
-          onClick={() => setSelectedCategory('')}
-          style={{
-            flexShrink: 0,
-            whiteSpace: 'nowrap',
-            minWidth: 'fit-content',
-            padding: '0 12px',
-          }}
-        >
-          Все
-        </Button>
-        {categories.map((cat) => (
+      {/* Меню категорий */}
+      <div style={{ marginBottom: '16px' }}>
+        {/* Первая строка: "Все" */}
+        <div style={{ marginBottom: '8px' }}>
           <Button
-            key={cat}
             size="s"
-            mode={selectedCategory === cat ? 'filled' : 'outline'}
-            onClick={() => setSelectedCategory(cat)}
+            mode={selectedCategory === '' ? 'filled' : 'outline'}
+            onClick={() => setSelectedCategory('')}
             style={{
-              flexShrink: 0,
               whiteSpace: 'nowrap',
-              minWidth: 'fit-content',
               padding: '0 12px',
+              minWidth: 'auto',
             }}
           >
-            {cat}
+            Все
           </Button>
-        ))}
+        </div>
+
+        {/* Категории: переносятся на новую строку, если не влезают */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          {categories.map((cat) => (
+            <Button
+              key={cat}
+              size="s"
+              mode={selectedCategory === cat ? 'filled' : 'outline'}
+              onClick={() => setSelectedCategory(cat)}
+              style={{
+                whiteSpace: 'nowrap',
+                padding: '0 12px',
+                minWidth: 'auto',
+              }}
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {loading && <Text>Загрузка товаров...</Text>}

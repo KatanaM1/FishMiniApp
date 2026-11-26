@@ -99,6 +99,9 @@ const categories = useMemo<readonly string[]>(
         is_active: isActive,
         category: category || undefined,
       };
+      if (description) productData.description = description;
+if (allImages.length > 0) productData.images = allImages;
+if (category) productData.category = category;
 
       await onSubmit(productData);
       onCancel();

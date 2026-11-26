@@ -89,16 +89,13 @@ const categories = useMemo<readonly string[]>(
 
       const allImages = [...existingImages, ...uploadedUrls];
 
-      const productData: Omit<Product, 'id'> = {
-        name,
-        price: parseFloat(price) || 0,
-        description: description || undefined,
-        images: allImages.length > 0 ? allImages : undefined,
-        store_id: storeId,
-        stock: parseInt(stock) || 0,
-        is_active: isActive,
-        category: category || undefined,
-      };
+  const productData: Omit<Product, 'id'> = {
+  name,
+  price: parseFloat(price) || 0,
+  store_id: storeId,
+  stock: parseInt(stock) || 0,
+  is_active: isActive,
+};
       if (description) productData.description = description;
 if (allImages.length > 0) productData.images = allImages;
 if (category) productData.category = category;

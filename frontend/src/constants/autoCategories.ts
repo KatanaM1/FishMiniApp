@@ -18,4 +18,5 @@ export const AUTO_CATEGORIES = [
   'Шаровые',
   'Тяги рулевые',
   'Кольца поршневые',
+  'ролик'
 ] as const;

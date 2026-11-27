@@ -25,10 +25,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Контейнер для всего контента */}
       <div
         style={{
-          minHeight: '50vh',
+          // если картинки нет — не резервируем 50vh, иначе будет пустота
+          minHeight: isImageUrl ? '50vh' : 'auto',
           width: '92vw',
           maxWidth: '380px',
           display: 'flex',
@@ -41,23 +41,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           zIndex: 1,
         }}
       >
-        {/* Блок изображения — абсолютное позиционирование меняется мгновенно, анимация только у transform */}
-        <div
-          style={{
-            position: isHovered ? 'absolute' : 'relative',
-            top: isHovered ? 0 : 'auto',
-            left: isHovered ? 0 : 'auto',
-            width: isHovered ? '100%' : '100%',
-            height: isHovered ? '100%' : '25vh',
-            zIndex: isHovered ? 10 : 1,
-            backgroundColor: '#2a2a2a',
-            borderRadius: '1.5vh',
-            overflow: 'hidden',
-            transition: 'none', // позиционирование без анимации
-            marginBottom: isHovered ? 0 : '1.5vh',
-          }}
-        >
-          {isImageUrl ? (
+        {/* Блок изображения рендерим ТОЛЬКО если есть настоящий URL */}
+        {isImageUrl && (
+          <div
+            style={{
+              position: isHovered ? 'absolute' : 'relative',
+              top: isHovered ? 0 : 'auto',
+              left: isHovered ? 0 : 'auto',
+              width: '100%',
+              height: isHovered ? '100%' : '25vh',
+              zIndex: isHovered ? 10 : 1,
+              backgroundColor: '#2a2a2a',
+              borderRadius: '1.5vh',
+              overflow: 'hidden',
+              transition: 'none',
+              marginBottom: isHovered ? 0 : '1.5vh',
+            }}
+          >
             <img
               src={image}
               alt={product.name}
@@ -70,33 +70,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 transform: isHovered ? 'scale(1.2)' : 'scale(1)',
               }}
             />
-          ) : (
-            <div
-              style={{
-                fontSize: '8vh',
-                textAlign: 'center',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#2a2a2a',
-                transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                transform: isHovered ? 'scale(1.2)' : 'scale(1)',
-              }}
-            >
-              {image || '📦'}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Текст и цена (остаются под картинкой при наведении) */}
+        {/* Текст и цена */}
         <div
           style={{
             position: 'relative',
             zIndex: 1,
-            opacity: isHovered ? 0 : 1,
+            opacity: isHovered && isImageUrl ? 0 : 1,
             transition: 'opacity 0.2s ease',
-            pointerEvents: isHovered ? 'none' : 'auto',
+            pointerEvents: isHovered && isImageUrl ? 'none' : 'auto',
           }}
         >
           <div style={{ marginBottom: '0.8vh' }}>
